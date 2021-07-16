@@ -2,10 +2,9 @@ require "shuffle_tabaco_room"
 require "thor"
 
 class ShuffleTabacoRoom::CLI < Thor
-  desc "shuffle", "メンバーをシャッフルして結果をSlackに通知します"
-  def shuffle
+  desc "shuffle CHANNEL", "メンバーをシャッフルして結果をSlackに通知します"
+  def shuffle(channel)
     a, b = ShuffleTabacoRoom::Members.new.shuffle
-    pp a, b
-    puts "今日は #{a[:name]} #{b[:name]}"
+    ShuffleTabacoRoom::Slack.new(channel: channel).notify(a, b)
   end
 end
