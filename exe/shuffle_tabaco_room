@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require "shuffle_tabaco_room"
+
+ShuffleTabacoRoom::CLI.start
