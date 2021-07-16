@@ -3,6 +3,7 @@ on:
   # UTC
   schedule:
     - cron: "0/5 8 * * *"
+  workflow_dispatch:
 
 jobs:
   test-manifest-build:
