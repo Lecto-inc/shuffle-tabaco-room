@@ -1,9 +1,9 @@
 name: Schedule
 on:
   # UTC
-  schedule:
-    - cron: "0 * * * *"
-  # workflow_dispatch:
+  # schedule:
+  #   - cron: "0 * * * *"
+  workflow_dispatch:
 
 jobs:
   shuffle:
