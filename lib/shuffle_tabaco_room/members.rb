@@ -15,7 +15,7 @@ class ShuffleTabacoRoom::Members
   WDAYS = %w{sun mon tue wed thu fri sat}.freeze
 
   def shuffle
-    today_available_memebrs.sample(2)
+    today_available_memebrs.sample(3)
   end
 
   def today_available_memebrs
