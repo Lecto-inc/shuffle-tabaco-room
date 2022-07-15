@@ -2,7 +2,7 @@ name: Schedule
 on:
   # UTC
   schedule:
-    - cron: "0 3 * * 2-4"
+    - cron: "0 3 * * 1-5"
 
 jobs:
   shuffle:
