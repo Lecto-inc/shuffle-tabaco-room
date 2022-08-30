@@ -12,7 +12,7 @@ class ShuffleTabacoRoom::Slack
     @channel = channel
   end
 
-  def notify(a, b, c)
+  def notify(a, b)
     client.chat_postMessage(
       channel: channel,
       as_user: true,
@@ -20,7 +20,6 @@ class ShuffleTabacoRoom::Slack
         今日のタバコ部屋行きは...
         <@#{a[:user_id]}> さん
         <@#{b[:user_id]}> さん
-        <@#{c[:user_id]}> さん
         です！
       MSG
     )
