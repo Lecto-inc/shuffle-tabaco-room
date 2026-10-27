@@ -41,9 +41,10 @@ The gem is available as open source under the terms of the [MIT License](https:/
 ## GitHub Actions runtime
 
 The weekday Slack notification runs at 03:00 UTC (12:00 JST), Monday through
-Friday. Pull requests and manual workflow runs execute the same installation and
-tests, but only the `schedule` event sends a Slack message. Tests use synthetic
-members and a local HTTP stub; no real Slack API calls are made.
+Friday. Manual workflow runs also send a Slack message after installation and
+tests succeed. Pull requests run installation and tests without sending a Slack
+message. Tests use synthetic members and a local HTTP stub; no real Slack API
+calls are made by the tests.
 
 The job uses the digest-pinned `ruby:3.4.12-bookworm` image and shell steps.
 Before fetching this public repository, it updates and checks Debian's
