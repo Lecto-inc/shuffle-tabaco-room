@@ -1,22 +1,58 @@
 name: Schedule
 on:
-  # UTC
+  # UTC; keep the existing weekday notification schedule.
   schedule:
     - cron: "0 3 * * 1-5"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   shuffle:
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    # Shell steps avoid the separate Node runtime used by JavaScript Actions.
+    container:
+      image: ruby:3.4.12-bookworm@sha256:9d1b22f2341dc96a1cd2f4f4495a31c19495b42ed243f1338e60075210025fd4
+    defaults:
+      run:
+        shell: bash
+    env:
+      # Ruby/OpenSSL and Bundler must use the updated system trust store.
+      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+      SSL_CERT_DIR: /etc/ssl/certs
+      BUNDLE_FROZEN: "true"
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.0.2
-      - name: Run
+      - name: Update CA certificates and Brotli before checkout
         run: |
-          bundle install && \
-          bundle exec ./exe/shuffle_tabaco_room shuffle random
+          apt-get update
+          apt-get install --yes --only-upgrade ca-certificates libbrotli1
+          dpkg --compare-versions "$(dpkg-query -W -f='${Version}' ca-certificates)" ge '20250419~deb12u2'
+          dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libbrotli1)" ge '1.0.9-2+deb12u1'
+          dpkg-query -W ca-certificates libbrotli1
+          ruby -ropenssl -e '
+            roots = File.read(ENV.fetch("SSL_CERT_FILE")).scan(/-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----/m)
+            names = roots.map { |pem| OpenSSL::X509::Certificate.new(pem).subject.to_a.assoc("CN")&.at(1) }
+            blocked = names & ["emSign ECC Root CA - G3", "AAA Certificate Services"]
+            abort "Compromised CA trust remains: #{blocked.join(", ")}" unless blocked.empty?
+          '
+      - name: Check out the requested revision
+        # This repository is public, so checkout needs no stored credentials.
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git init --quiet
+          git remote add origin "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          git fetch --no-tags --depth=1 origin "$GITHUB_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
+      - name: Test without sending Slack messages
+        run: bundle exec rake spec
+      - name: Send the scheduled notification
+        if: github.event_name == 'schedule'
+        run: bundle exec ./exe/shuffle_tabaco_room shuffle random
         env:
           SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
           MEMBERS: ${{ secrets.MEMBERS }}

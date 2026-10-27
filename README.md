@@ -37,3 +37,38 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/yaginc
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## GitHub Actions runtime
+
+The weekday Slack notification runs at 03:00 UTC (12:00 JST), Monday through
+Friday. Pull requests and manual workflow runs execute the same installation and
+tests, but only the `schedule` event sends a Slack message. Tests use synthetic
+members and a local HTTP stub; no real Slack API calls are made.
+
+The job uses the digest-pinned `ruby:3.4.12-bookworm` image and shell steps.
+Before fetching this public repository, it updates and checks Debian's
+`ca-certificates` and `libbrotli1` packages. Ruby and Bundler use the updated
+system CA store. The frozen lockfile uses Bundler 2.6.9; Thor 1.5 supports the
+new Ruby runtime. Application HTTP dependencies remain at their existing locked
+versions.
+
+This avoids JavaScript Actions and their separate runner-bundled Node runtime.
+Changing `runs-on`, installing Node with `setup-node`, or adding a Ruby container
+alongside JavaScript Actions would not select that internal Node version.
+GitHub controls hosted-runner rollout: runner 2.338.2 includes Node 24.22.1,
+but the runner version cannot be pinned in this workflow. The host runner and
+container engine remain managed by GitHub.
+
+When updating the container image, update its digest and review the package
+minimum versions in the workflow. JavaScript Actions can be reconsidered after
+verifying the actual hosted runner's internal Node and trust store are patched.
+The manual checkout relies on public repository access; private repositories
+would require an explicit authentication mechanism.
+
+References:
+
+- [Node.js October 2026 security fixes](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)
+- [Runner 2.338.2 internal Node version](https://github.com/actions/runner/blob/v2.338.2/src/Misc/externals.sh)
+- [GitHub container jobs](https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/run-jobs-in-a-container)
+- [Debian Brotli fix](https://security-tracker.debian.org/tracker/CVE-2026-111497)
+- [eMudhra incident and offline certificate-chain checks](https://emudhra.we-have-a-problem.com/)
