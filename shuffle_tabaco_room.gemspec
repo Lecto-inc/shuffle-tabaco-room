@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = "Hoge"
   spec.homepage      = "https://github.com/Lecto-inc/shuffle-tabaco-room"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.4.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 3.4.0")
 
   spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
 
@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
 
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
-  spec.add_dependency "thor", "~> 1.1.0"
+  spec.add_dependency "thor", "~> 1.5.0"
   spec.add_dependency "slack-ruby-client", "~> 0.17.0"
 
   # For more information and examples about making a new gem, checkout our

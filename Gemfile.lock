@@ -3,7 +3,7 @@ PATH
   specs:
     shuffle_tabaco_room (0.1.0)
       slack-ruby-client (~> 0.17.0)
-      thor (~> 1.1.0)
+      thor (~> 1.5.0)
 
 GEM
   remote: https://rubygems.org/
@@ -52,7 +52,7 @@ GEM
       gli
       hashie
       websocket-driver
-    thor (1.1.0)
+    thor (1.5.0)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -66,4 +66,4 @@ DEPENDENCIES
   shuffle_tabaco_room!
 
 BUNDLED WITH
-   2.2.15
+   2.6.9
