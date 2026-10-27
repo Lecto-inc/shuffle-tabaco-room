@@ -50,8 +50,8 @@ jobs:
         run: bundle install --jobs 4 --retry 3
       - name: Test without sending Slack messages
         run: bundle exec rake spec
-      - name: Send the scheduled notification
-        if: github.event_name == 'schedule'
+      - name: Send Slack notification
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: bundle exec ./exe/shuffle_tabaco_room shuffle random
         env:
           SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
